@@ -10,7 +10,7 @@
 html, body {
   margin: 0;
   padding: 0;
-  background: var(--studio-gray);
+  background: #fff;
   color: var(--ink);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -66,7 +66,7 @@ a { color: inherit; }
 }
 
 .hero__title {
-  margin: -780px 0 0;
+  margin: -790px 0 0;
   font-size: clamp(1.5rem, 3vw, 2.5rem);
   font-weight: 800;
   letter-spacing: -0.01em;
@@ -246,38 +246,95 @@ a { color: inherit; }
   transform: translateX(-50%) translateY(-2px);
 }
 
-/* ===================== simulation strip ===================== */
-.sims {
-  padding: 72px 24px 88px;
-  max-width: 1200px;
-  margin: 0 auto;
+/* ===================== shared content width ===================== */
+.tldr,
+.abstract {
+  max-width: 1000px;
+  margin: 0 auto;  
 }
 
-.section-title {
+/* ===================== TL;DR ===================== */
+.tldr {
+  padding: 20px 20px 0;
+  /*居中*/
   text-align: center;
-  font-size: clamp(1.5rem, 3vw, 2.2rem);
-  font-weight: 700;
-  margin: 0 0 36px;
 }
 
-.sims__grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
-
-.sims__item {
+.tldr__text {
   margin: 0;
-  border-radius: 14px;
-  overflow: hidden;
-  background: var(--studio-gray);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  padding: 10px 12px;
+  background: #f5f6f8;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #1a1a1c;
 }
-.sims__item video {
-  width: 100%;
-  height: auto;
-  display: block;
+.tldr__tag {
+  margin: 0;
+  background: #f5f6f8;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: #8a8a8f;
+  white-space: nowrap;
 }
+.tldr__text em {
+  font-style: normal;
+  font-weight: 600;
+  /* color: var(--accent); */
+}
+
+/* ===================== abstract (collapsible) ===================== */
+.abstract {
+  padding: 20px 20px 0;
+}
+
+.abstract__details {
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.abstract__summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  /* gap: 8px; */
+  padding: 10px 2px;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.abstract__summary::-webkit-details-marker { display: none; }
+.abstract__summary::before {
+  content: "\25B8";          /* ▸ */
+  font-size: 1.5em;
+  line-height: 1;
+  color: var(--ink);
+  position: relative;
+  top: -0.06em;              /* nudge glyph up to align with title baseline */
+  transition: transform 0.18s ease;
+}
+.abstract__details[open] .abstract__summary::before { transform: rotate(90deg); }
+
+.abstract__hint {
+  font-size: 1rem;
+  /* font-weight: 700; */
+  color: #9a9a9f;
+  margin-left: 4px;
+}
+.abstract__details[open] .abstract__hint { display: none; }
+
+.abstract__body {
+  padding: 0 2px 10px;
+}
+.abstract__body p {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  text-align: justify;
+  color: #2a2a2c;
+}
+.abstract__body p:last-child { margin-bottom: 0; }
 
 /* ===================== responsive ===================== */
 @media (max-width: 720px) {

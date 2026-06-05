@@ -65,6 +65,26 @@
     </div>
   </header>
 
+  <!-- ===================== TL;DR ===================== -->
+  <section class="tldr">
+    <p class="tldr__text">
+      <span class="tldr__tag"><strong>TL;DR:</strong></span>
+<strong>&phi;-Scene</strong> reconstructs <em>physically grounded</em>, <em>simulation-ready</em> 3D scenes from single images.
+    </p>
+  </section>
+
+  <!-- ===================== ABSTRACT ===================== -->
+  <section class="abstract">
+    <details class="abstract__details">
+      <summary class="abstract__summary">Abstract<span class="abstract__hint">(click to expand)</span></summary>
+      <div class="abstract__body">
+        <p>Reconstructing compositional 3D scenes from a single image is a fundamental challenge in 3D world modeling. Recent methods can recover high-fidelity, complete 3D objects and predict plausible scene arrangements, but most still treat scene reconstruction primarily as a visual and geometric prediction problem. Their outputs may therefore contain floating objects, interpenetrations, or unstable-contact artifacts, limiting their physical validity and downstream usability in simulation, robotics, and interactive environments.</p>
+        <p>We present &phi;-Scene, a physically grounded approach to open-vocabulary and compositional image-to-3D scene reconstruction. The key premise is that a reconstructed scene should not be treated merely as a set of objects with predicted poses, but as a stable physical system. Accordingly, &phi;-Scene formulates reconstruction as topology-driven physical assembly: it infers how objects support one another, orders them accordingly, and progressively settles each object against its already stabilized support context. To instantiate this, &phi;-Scene uses compositional 3D foundation models to recover complete object geometries and initial object poses, optionally transfers global arrangement cues from a holistic image-to-3D prior, and then performs support-aware physical assembly. For each object in topological order, SDF-based optimization first resolves penetrations against the pre-settled support context, and rigid-body simulation then settles the object into a stable contact configuration under real-world physical constraints. This process produces compositional 3D reconstructions that preserve object-level geometry while improving placement coherence, contact validity, and dynamic physical stability.</p>
+        <p>Experiments on 3D-Front show that &phi;-Scene achieves the strongest overall performance among out-of-domain methods and remains highly competitive with in-domain baselines on standard 3D reconstruction metrics. Human and VLM evaluations further show strong preference for &phi;-Scene in visual quality, reference alignment, and physical plausibility. Finally, dedicated physical plausibility metrics covering static contact quality and dynamic stability demonstrate that &phi;-Scene substantially reduces penetration artifacts while producing much lower post-simulation drift, indicating more stable and physically grounded 3D scenes.</p>
+      </div>
+    </details>
+  </section>
+
   <script>
     (function () {
       var v    = document.querySelector('.hero__bg');
