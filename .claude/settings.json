@@ -2,7 +2,34 @@
   "permissions": {
     "allow": [
       "Read(//tmp/vframes/**)",
-      "Read(//private/tmp/vframes/**)"
+      "Read(//private/tmp/vframes/**)",
+      "Bash(ffprobe -v error -show_entries format=duration:stream=width,height,r_frame_rate,nb_frames,codec_name -select_streams v:0 -of default=noprint_wrappers=1 video_trimmed.mp4)",
+      "Bash(ffmpeg -v error -i video_trimmed.mp4 -vf \"blackdetect=d=0.05:pic_th=0.95:pix_th=0.05\" -an -f null -)",
+      "Bash(ffmpeg -v error -i video_trimmed.mp4 -vf \"blackdetect=d=0.10:pic_th=0.85:pix_th=0.10\" -an -f null -)",
+      "Bash(ffmpeg -v error -i video_trimmed.mp4 -vf \"select='gt\\(scene,0.3\\)',showinfo\" -an -f null -)",
+      "Bash(sort -t: -k2 -n)",
+      "Bash(rm -f /tmp/vt/h1.png /tmp/vt/h2.png)",
+      "Bash(ffmpeg -v error -ss 0 -i video_trimmed.mp4 -vf \"fps=1,scale=300:169,tile=8x5:padding=3:color=red\" -frames:v 1 /tmp/vt/h1.png)",
+      "Bash(ffmpeg -v error -ss 39 -i video_trimmed.mp4 -vf \"fps=1,scale=300:169,tile=8x5:padding=3:color=red\" -frames:v 1 /tmp/vt/h2.png)",
+      "Read(//tmp/vt/**)",
+      "Read(//private/tmp/vt/**)",
+      "Bash(ffmpeg -v error -ss 9  -i video_trimmed.mp4 -vf \"fps=2,scale=360:203,tile=7x2:padding=3:color=red\" -frames:v 1 /tmp/vt/zA.png)",
+      "Bash(ffmpeg -v error -ss 30 -i video_trimmed.mp4 -vf \"fps=2,scale=360:203,tile=7x2:padding=3:color=red\" -frames:v 1 /tmp/vt/zB.png)",
+      "Bash(ffmpeg -v error -ss 44 -i video_trimmed.mp4 -vf \"fps=2,scale=360:203,tile=5x2:padding=3:color=red\" -frames:v 1 /tmp/vt/zC.png)",
+      "Bash(ffmpeg -v error -ss 59 -i video_trimmed.mp4 -vf \"fps=2,scale=360:203,tile=5x2:padding=3:color=red\" -frames:v 1 /tmp/vt/zD.png)",
+      "Bash(ffmpeg -v error -ss 73 -i video_trimmed.mp4 -vf \"fps=2,scale=360:203,tile=5x2:padding=3:color=red\" -frames:v 1 /tmp/vt/zE.png)",
+      "Read(//tmp/edge/**)",
+      "Read(//private/tmp/edge/**)",
+      "Bash(rm -f /tmp/edge/f441s.png /tmp/edge/f441e.png /tmp/edge/f23s.png)",
+      "Bash(ffmpeg -v error -ss 61.0 -i video_trimmed.mp4 -vf \"fps=4,scale=300:169,tile=7x2:padding=3:color=red\" -frames:v 1 /tmp/edge/f441s.png)",
+      "Bash(ffmpeg -v error -ss 74.5 -i video_trimmed.mp4 -vf \"fps=4,scale=300:169,tile=6x2:padding=3:color=red\" -frames:v 1 /tmp/edge/f441e.png)",
+      "Bash(ffmpeg -v error -ss 30.75 -i video_trimmed.mp4 -vf \"fps=4,scale=300:169,tile=8x1:padding=3:color=red\" -frames:v 1 /tmp/edge/f23s.png)",
+      "Read(//tmp/tail/**)",
+      "Read(//private/tmp/tail/**)",
+      "Read(//tmp/v3/**)",
+      "Read(//private/tmp/v3/**)",
+      "Read(//tmp/v4/**)",
+      "Read(//private/tmp/v4/**)"
     ]
   }
 }
