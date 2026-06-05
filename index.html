@@ -6,6 +6,7 @@
   <title>&phi;-Scene: Physically Grounded Image-to-3D Scene Reconstruction</title>
   <meta name="description" content="phi-Scene: Physically Grounded Image-to-3D Scene Reconstruction" />
   <link rel="stylesheet" href="css/style.css" />
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
 </head>
 <body>
 
@@ -84,6 +85,195 @@
       </div>
     </details>
   </section>
+
+  <!-- ===================== INTERACTIVE DEMO — STATIC ===================== -->
+  <section class="demo" id="demo-static">
+    <div class="demo__head">
+      <h2 class="demo__title">Interactive Comparison: Static</h2>
+    <!-- Instructions with icons -->
+    <div class="instructions" style="margin-top: 10px;">
+      <div class="instruction-item" style="display: flex; align-items: center;">
+        <img src="icons/left-click.png" alt="Left Click" style="margin-right: 0px; width: 25px; height: 100%;">
+        <span> Drag with left click to <strong>rotate</strong>.</span>
+  
+        <img src="icons/scroll-wheel.png" alt="Scroll Wheel" style="margin-right: 0px; width: 25px; height: 100%;">
+        <span>Scroll to <strong>zoom in / out</strong>.</span>
+  
+        <img src="icons/right-click.png" alt="Right Click" style="margin-right: 0px; width: 25px; height: 100%;">
+        <span>Drag with right click to <strong>move</strong>.</span>
+    </div>
+    </div>
+    <div class="demo__cases" aria-label="Select scene"></div>
+    <div class="cases-scroll" aria-hidden="true"><div class="cases-scroll__thumb"></div></div>
+    <div class="surround__frame"></div>
+  </section>
+
+  <!-- divider between the two interactive comparisons -->
+  <hr class="demo-sep" aria-hidden="true" />
+
+  <!-- ===================== INTERACTIVE DEMO — DYNAMIC ===================== -->
+  <section class="demo" id="demo-dynamic">
+    <div class="demo__head">
+      <h2 class="demo__title">Interactive Comparison: Dynamic</h2>
+    <!-- Instructions with icons -->
+    <div class="instructions" style="margin-top: 10px;">
+      <div class="instruction-item" style="display: flex; align-items: center;">
+        <img src="icons/left-click.png" alt="Left Click" style="margin-right: 0px; width: 25px; height: 100%;">
+        <span> Drag with left click to <strong>rotate</strong>.</span>
+
+        <img src="icons/scroll-wheel.png" alt="Scroll Wheel" style="margin-right: 0px; width: 25px; height: 100%;">
+        <span>Scroll to <strong>zoom in / out</strong>.</span>
+
+        <img src="icons/right-click.png" alt="Right Click" style="margin-right: 0px; width: 25px; height: 100%;">
+        <span>Drag with right click to <strong>move</strong>.</span>
+    </div>
+    </div>
+    <div class="demo__cases" aria-label="Select scene"></div>
+    <div class="cases-scroll" aria-hidden="true"><div class="cases-scroll__thumb"></div></div>
+    <div class="surround__frame"></div>
+  </section>
+
+  <script>
+    (function () {
+      var WEB    = 'assets/post_sim_web';
+      var RGBS   = 'assets/rgbs';
+      var MASKS  = 'assets/masks';
+      var N_CASES = 16;
+      var DEFAULT_CASE = 8;
+
+      // Ours is large (top-left 2x2); the 5 baselines fill the remaining cells b0..b4
+      var METHODS = [
+        { file: 'phi-scene',     label: 'Ours (φ-Scene)', ours: true },
+        { file: 'midi_textured', label: 'MIDI'     },
+        { file: 'scenegen',      label: 'SceneGen' },
+        { file: 'gen3dsr_no_bg', label: 'Gen3DSR'  },
+        { file: 'depr',          label: 'DepR'     },
+        { file: 'sam3d',         label: 'SAM3D'    }
+      ];
+      var BASELINES = METHODS.filter(function (m) { return !m.ours; });
+      var AREAS = ['b0', 'b1', 'b2', 'b3', 'b4'];
+
+      function pad(i) { return String(i).padStart(3, '0'); }
+
+      // static: hold the final settled frame (last keyframe), then pause
+      function poseEnd(mv) {
+        if (!mv.duration) { return setTimeout(function () { poseEnd(mv); }, 80); }
+        try { mv.currentTime = mv.duration; mv.pause(); } catch (e) {}
+      }
+      // dynamic: (re)start the settling animation from the beginning (loops)
+      function playFromStart(mv) {
+        try { mv.currentTime = 0; mv.play(); } catch (e) {}
+      }
+
+      // Build one comparison section. Only the per-frame animation behavior
+      // differs between modes; the strip, grid, and rail are fully shared.
+      function buildDemo(sectionId, mode) {
+        var section = document.getElementById(sectionId);
+        var cases   = section.querySelector('.demo__cases');
+        var frame   = section.querySelector('.surround__frame');
+        var thumbs  = [];
+        var viewers = {};   // file -> model-viewer
+
+        var MV = 'camera-controls interaction-prompt="none" disable-tap ' +
+                 'shadow-intensity="0.7" exposure="1.0" environment-image="neutral" ' +
+                 'loading="lazy" reveal="auto"' + (mode === 'dynamic' ? ' autoplay' : '');
+
+        // --- case strip: each thumb is RGB | mask, horizontally concatenated ---
+        for (var i = 0; i < N_CASES; i++) {
+          (function (idx) {
+            var b = document.createElement('button');
+            b.className = 'case-thumb';
+            b.type = 'button';
+            b.innerHTML =
+              '<img src="' + RGBS  + '/' + pad(idx) + '.png" alt="RGB ' + idx + '" loading="lazy">' +
+              '<img src="' + MASKS + '/' + pad(idx) + '.png" alt="Mask ' + idx + '" loading="lazy">';
+            b.addEventListener('click', function () { setCase(idx); });
+            cases.appendChild(b);
+            thumbs.push(b);
+          })(i);
+        }
+
+        // --- 3x3 grid of viewers: Ours = top-left 2x2, baselines fill the rest ---
+        function addTile(m, area) {
+          var t = document.createElement('div');
+          t.className = 'tile' + (m.ours ? ' tile--ours' : '');
+          t.style.gridArea = area;
+          var live = (mode === 'dynamic' && m.ours)
+            ? '<span class="tile__live"><i class="tile__live-dot"></i>Not a still image!</span>'
+            : '';
+          t.innerHTML = '<model-viewer class="mv" ' + MV + '></model-viewer>' + live +
+                        '<span class="tile__label">' + m.label + '</span>';
+          frame.appendChild(t);
+          var mv = t.querySelector('model-viewer');
+          mv.addEventListener('load', function () {
+            (mode === 'dynamic' ? playFromStart : poseEnd)(mv);
+          });
+          viewers[m.file] = mv;
+        }
+        addTile(METHODS[0], 'ours');
+        BASELINES.forEach(function (m, k) { addTile(m, AREAS[k]); });
+
+        function setCase(idx) {
+          var id = pad(idx);
+          METHODS.forEach(function (m) {
+            viewers[m.file].src = WEB + '/' + id + '/' + m.file + '.glb';
+          });
+          thumbs.forEach(function (t, k) { t.classList.toggle('is-active', k === idx); });
+        }
+        setCase(DEFAULT_CASE);
+
+        // --- custom horizontal scroll rail under the strip ---
+        var rail = section.querySelector('.cases-scroll');
+        var knob = section.querySelector('.cases-scroll__thumb');
+        function refreshRail() {
+          var vis = cases.clientWidth, total = cases.scrollWidth;
+          if (total <= vis + 1) { rail.style.visibility = 'hidden'; return; }
+          rail.style.visibility = 'visible';
+          var ratio = vis / total;                         // visible fraction
+          var maxScroll = total - vis;
+          var p = maxScroll ? cases.scrollLeft / maxScroll : 0;
+          knob.style.width = (ratio * 100) + '%';
+          knob.style.left  = (p * (100 - ratio * 100)) + '%';
+        }
+        function centerRail() {
+          cases.scrollLeft = (cases.scrollWidth - cases.clientWidth) / 2;  // start at 50%
+          refreshRail();
+        }
+        cases.addEventListener('scroll', refreshRail, { passive: true });
+        window.addEventListener('resize', refreshRail);
+        window.addEventListener('load', centerRail);
+        centerRail();
+
+        // drag the knob to scroll the strip
+        var dragging = false, startX = 0, startScroll = 0;
+        function railToScroll(dx) {
+          var vis = cases.clientWidth, total = cases.scrollWidth;
+          var maxScroll = total - vis;
+          var travel = rail.clientWidth - knob.clientWidth;   // px the knob can move
+          if (travel <= 0) return;
+          cases.scrollLeft = Math.max(0, Math.min(maxScroll, startScroll + dx * (maxScroll / travel)));
+        }
+        knob.addEventListener('pointerdown', function (e) {
+          dragging = true; startX = e.clientX; startScroll = cases.scrollLeft;
+          knob.setPointerCapture(e.pointerId); e.preventDefault();
+        });
+        knob.addEventListener('pointermove', function (e) { if (dragging) railToScroll(e.clientX - startX); });
+        knob.addEventListener('pointerup',   function () { dragging = false; });
+        knob.addEventListener('pointercancel', function () { dragging = false; });
+        // click on the rail track to jump
+        rail.addEventListener('pointerdown', function (e) {
+          if (e.target === knob) return;
+          var r = rail.getBoundingClientRect();
+          var vis = cases.clientWidth, total = cases.scrollWidth;
+          var p = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+          cases.scrollLeft = p * (total - vis);
+        });
+      }
+
+      buildDemo('demo-static',  'static');
+      buildDemo('demo-dynamic', 'dynamic');
+    })();
+  </script>
 
   <script>
     (function () {

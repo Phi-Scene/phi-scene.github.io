@@ -249,7 +249,7 @@ a { color: inherit; }
 /* ===================== shared content width ===================== */
 .tldr,
 .abstract {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;  
 }
 
@@ -301,8 +301,8 @@ a { color: inherit; }
   align-items: center;
   /* gap: 8px; */
   padding: 10px 2px;
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-size: 1.4rem;
+  font-weight: 800;
 }
 .abstract__summary::-webkit-details-marker { display: none; }
 .abstract__summary::before {
@@ -336,7 +336,198 @@ a { color: inherit; }
 }
 .abstract__body p:last-child { margin-bottom: 0; }
 
+/* ===================== interactive demo (static) ===================== */
+.demo {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 20px 0px;
+}
+.demo__head { margin-bottom: 14px; }
+.demo__title {
+  margin: -10px 0 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.demo__sub {
+  margin: 6px 0 0;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: #5a5a5f;
+}
+.demo__sub strong { color: var(--accent); }
+
+/* divider between the two interactive comparisons (matches the abstract rule) */
+.demo-sep {
+  max-width: 1160px;            /* aligns with the abstract line & demo content box */
+  margin: 20px auto 0;          /* 20px above; the next .demo's 20px padding gives the gap below */
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+/* --- case selector: horizontally scrollable strip of RGB|mask thumbnails --- */
+.demo__cases {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 12px 2px 10px;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;                 /* native bar hidden; custom rail below */
+}
+.demo__cases::-webkit-scrollbar { display: none; }
+
+/* custom horizontal scroll rail (affordance: "scroll for more cases") */
+.cases-scroll {
+  position: relative;
+  height: 4px;
+  max-width: 1200px;
+  margin: 0 auto 18px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  touch-action: none;
+}
+.cases-scroll__thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  min-width: 32px;
+  border-radius: 999px;
+  background: var(--accent);
+  opacity: 0.5;
+  transition: opacity 0.15s ease;
+}
+.cases-scroll:hover .cases-scroll__thumb { opacity: 0.78; }
+.case-thumb {
+  flex: 0 0 auto;
+  display: flex;                 /* RGB | mask side by side */
+  height: 116px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: #f0f0f2;
+  cursor: pointer;
+  overflow: hidden;
+  scroll-snap-align: start;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+.case-thumb img {
+  height: 100%;
+  width: 116px;                  /* each panel square -> thumb is 2:1 */
+  object-fit: cover;
+  display: block;
+}
+.case-thumb img + img { border-left: 2px solid #fff; }
+.case-thumb:hover { transform: translateY(-2px); }
+.case-thumb.is-active {
+  border-color: var(--accent);
+  box-shadow: 0 4px 16px rgba(42,109,240,0.22);
+}
+
+/* --- 3x3 viewer grid: Ours = top-left 2x2, baselines fill b0..b4 --- */
+.surround__frame {
+  display: grid;
+  max-width: 1200px;
+  margin: 0 auto;
+  aspect-ratio: 1.4 / 1;           /* square grid -> square cells */
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-areas:
+    "ours ours b0"
+    "ours ours b1"
+    "b2   b3   b4";
+  gap: 12px;
+}
+
+.tile {
+  position: relative;
+  border: 1px solid rgba(0,0,0,0.10);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--studio-gray);
+  min-height: 0;                 /* allow grid cell to control height */
+}
+.tile .mv { width: 100%; height: 100%; --poster-color: transparent; }
+.tile__label {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(20,20,22,0.74);
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+/* "live simulation" badge — dynamic section, Ours window only (top-left) */
+.tile__live {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 11px;
+  border-radius: 999px;
+  background: rgba(20, 20, 22, 0.74);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+.tile__live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ff5a5a;
+  box-shadow: 0 0 0 0 rgba(255, 90, 90, 0.55);
+  animation: livePulse 1.4s ease-out infinite;
+}
+@keyframes livePulse {
+  0%   { box-shadow: 0 0 0 0 rgba(255, 90, 90, 0.55); }
+  70%  { box-shadow: 0 0 0 8px rgba(255, 90, 90, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 90, 90, 0); }
+}
+@media (prefers-reduced-motion: reduce) { .tile__live-dot { animation: none; } }
+
+.tile--ours {
+  grid-area: ours;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 6px 24px rgba(42,109,240,0.14);
+}
+.tile--ours .tile__label {
+  background: var(--accent);
+  font-size: 0.9rem;
+  padding: 5px 14px;
+}
+
 /* ===================== responsive ===================== */
+@media (max-width: 760px) {
+  .surround__frame {
+    aspect-ratio: auto;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto;
+    grid-auto-rows: 1fr;
+    grid-template-areas:
+      "ours ours"
+      "b0   b1"
+      "b2   b3"
+      "b4   b4";
+  }
+  .surround__frame .tile { aspect-ratio: 1 / 1; }
+  .surround__frame .tile--ours { aspect-ratio: 16 / 11; }
+  .case-thumb { height: 92px; }
+  .case-thumb img { width: 92px; }
+}
+
 @media (max-width: 720px) {
   .sims__grid { grid-template-columns: 1fr; }
   .authors { gap: 4px 12px; font-size: 0.98rem; }
