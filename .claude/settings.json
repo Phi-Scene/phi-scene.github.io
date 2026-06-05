@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//tmp/vframes/**)",
+      "Read(//private/tmp/vframes/**)"
+    ]
+  }
+}
