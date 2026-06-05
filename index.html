@@ -22,7 +22,7 @@
     <div class="hero__content">
       <h1 class="hero__title">&phi;-Scene: Physically Grounded Image-to-3D Scene Reconstruction</h1>
 
-      <p class="hero__venue">arXiv 2026</p>
+      <!-- <p class="hero__venue">arXiv 2026</p> -->
 
       <ul class="authors">
         <li><a href="https://haodong2000.github.io/">Haodong Li</a></li>
@@ -52,8 +52,74 @@
       </nav>
     </div>
 
-    <div class="hero__scroll" aria-hidden="true">&#x2193;</div>
+    <!-- hover-reveal video controls -->
+    <div class="hero__controls">
+      <button class="hero__playpause" type="button" aria-label="Play / pause">&#10074;&#10074;</button>
+      <div class="hero__progress" role="slider" tabindex="0" aria-label="Seek video"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="hero__progress-fill"></div>
+        <div class="hero__sim-marker">
+          <button class="hero__sim-cta" type="button">Click here to see simulation demos!</button>
+        </div>
+      </div>
+    </div>
   </header>
+
+  <script>
+    (function () {
+      var v    = document.querySelector('.hero__bg');
+      var bar  = document.querySelector('.hero__progress');
+      var fill = document.querySelector('.hero__progress-fill');
+      var pp   = document.querySelector('.hero__playpause');
+      if (!v || !bar || !fill || !pp) return;
+
+      var PLAY = '▶', PAUSE = '❚❚';
+      function syncIcon() { pp.textContent = v.paused ? PLAY : PAUSE; }
+      pp.addEventListener('click', function () { v.paused ? v.play() : v.pause(); });
+      v.addEventListener('play', syncIcon);
+      v.addEventListener('pause', syncIcon);
+
+      v.addEventListener('timeupdate', function () {
+        if (!v.duration) return;
+        var p = v.currentTime / v.duration;
+        fill.style.width = (p * 100) + '%';
+        bar.setAttribute('aria-valuenow', Math.round(p * 100));
+      });
+
+      function seekToClientX(clientX) {
+        var r = bar.getBoundingClientRect();
+        var p = Math.min(1, Math.max(0, (clientX - r.left) / r.width));
+        if (v.duration) { v.currentTime = p * v.duration; fill.style.width = (p * 100) + '%'; }
+      }
+      var dragging = false;
+      bar.addEventListener('pointerdown', function (e) {
+        dragging = true; bar.setPointerCapture(e.pointerId); seekToClientX(e.clientX);
+      });
+      bar.addEventListener('pointermove', function (e) { if (dragging) seekToClientX(e.clientX); });
+      bar.addEventListener('pointerup',   function () { dragging = false; });
+      bar.addEventListener('pointercancel', function () { dragging = false; });
+
+      // "Simulation demos" marker at 1:18 (78s) -> jump there on click
+      var SIM_TIME = 78;
+      var marker = document.querySelector('.hero__sim-marker');
+      var cta    = document.querySelector('.hero__sim-cta');
+      function placeMarker() {
+        if (v.duration && marker) marker.style.left = (SIM_TIME / v.duration * 100) + '%';
+      }
+      v.addEventListener('loadedmetadata', placeMarker);
+      placeMarker();
+      if (cta) {
+        cta.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+        cta.addEventListener('click', function (e) {
+          e.stopPropagation();
+          v.currentTime = SIM_TIME;
+          v.play();
+        });
+      }
+
+      syncIcon();
+    })();
+  </script>
 
 </body>
 </html>
