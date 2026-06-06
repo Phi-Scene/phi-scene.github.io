@@ -555,15 +555,7 @@ a { color: inherit; }
 
 .tile--ours {
   grid-area: ours;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent), 0 6px 24px rgba(42,109,240,0.14);
 }
-.tile--ours .tile__label {
-  background: var(--accent);
-  font-size: 0.9rem;
-  padding: 5px 14px;
-}
-
 /* ===================== responsive ===================== */
 @media (max-width: 760px) {
   .surround__frame {
