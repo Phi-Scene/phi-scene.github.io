@@ -66,19 +66,11 @@ a { color: inherit; }
 }
 
 .hero__title {
-  margin: -790px 0 0;
+  margin: -810px 0 0;
   font-size: clamp(1.5rem, 3vw, 2.5rem);
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.01em;
   line-height: 1.2;
-}
-
-.hero__venue {
-  margin: 14px 0 0;
-  font-size: clamp(1rem, 1.6vw, 1.2rem);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  opacity: 0.85;
 }
 
 .authors {
@@ -87,7 +79,7 @@ a { color: inherit; }
   flex-wrap: wrap;
   justify-content: center;
   gap: 4px 18px;
-  margin: 14px 0 0;
+  margin: 8px 0 0;
   padding: 0;
   font-size: clamp(1rem, 1.6vw, 1.2rem);
   font-weight: 500;
@@ -107,7 +99,7 @@ a { color: inherit; }
   flex-wrap: wrap;
   justify-content: center;
   gap: 14px;
-  margin-top: 14px;
+  margin-top: 12px;
 }
 
 .btn {
@@ -232,7 +224,7 @@ a { color: inherit; }
   background: rgba(20, 20, 22, 0.82);
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: #fff;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 600;
   line-height: 1;
   cursor: pointer;
@@ -389,7 +381,7 @@ a { color: inherit; }
   font-weight: 800;
 }
 .bibtex__lead {            /* aligned with .abstract__body p */
-  margin: 6px 0 14px;
+  margin: 6px 0 10px;
   font-size: 0.95rem;
   line-height: 1.5;
   color: #2a2a2c;
