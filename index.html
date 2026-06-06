@@ -47,7 +47,7 @@
         <a class="btn btn--disabled" aria-disabled="true" tabindex="-1">
           <span>Code</span>
         </a>
-        <a class="btn" href="#" target="_blank" rel="noopener">
+        <a class="btn" href="#demo-dynamic">
           <span>Interactive Demo</span>
         </a>
       </nav>
@@ -131,6 +131,24 @@
     <div class="demo__cases" aria-label="Select scene"></div>
     <div class="cases-scroll" aria-hidden="true"><div class="cases-scroll__thumb"></div></div>
     <div class="surround__frame"></div>
+  </section>
+
+  <!-- divider between the demo and the citation -->
+  <hr class="demo-sep" aria-hidden="true" />
+
+  <!-- ===================== BIBTEX ===================== -->
+  <section class="bibtex" id="bibtex">
+    <h2 class="bibtex__title">BibTeX</h2>
+    <p class="bibtex__lead">Please consider citing our paper if you find it useful in your research 🌹</p>
+    <div class="bibtex__box">
+      <button class="bibtex__copy" type="button"
+        onclick="var b=this;navigator.clipboard.writeText(b.parentNode.querySelector('code').innerText).then(function(){b.textContent='Copied!';setTimeout(function(){b.textContent='Copy';},1500);});">Copy</button>
+      <pre class="bibtex__code"><code>Coming soon...
+Coming soon...
+Coming soon...
+Coming soon...
+Coming soon...</code></pre>
+    </div>
   </section>
 
   <script>
@@ -330,6 +348,11 @@
       syncIcon();
     })();
   </script>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="site-footer" style="margin-top: -22px;">
+    <p>Thanks for visiting our project page! &copy; 2026 Haodong Li.</p>
+  </footer>
 
 </body>
 </html>
