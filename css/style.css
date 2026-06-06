@@ -343,11 +343,11 @@ a { color: inherit; }
 }
 .demo__sub {
   margin: 6px 0 0;
-  font-size: 0.95rem;
-  line-height: 1.45;
-  color: #5a5a5f;
+  font-size: 1rem;
+  /* line-height: 1.45; */
+  /* color: #5a5a5f; */
 }
-.demo__sub strong { color: var(--accent); }
+/* .demo__sub strong { color: var(--accent); } */
 
 /* divider between the two interactive comparisons (matches the abstract rule) */
 .demo-sep {
