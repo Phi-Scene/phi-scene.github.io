@@ -113,15 +113,15 @@ a { color: inherit; }
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 11px 22px;
+  gap: 6px;
+  padding: 7px 15px;
   border-radius: 999px;
   background: rgba(20, 20, 22, 0.78);
   border: 1px solid rgba(255, 255, 255, 0.18);
   color: #fff;
   text-decoration: none;
   font-weight: 600;
-  font-size: 0.98rem;
+  font-size: 0.85rem;
   text-shadow: none;
   backdrop-filter: blur(6px);
   transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
