@@ -42,7 +42,13 @@
   </header>
 
   <figure class="teaser">
-    <video class="fig" src="assets/teaser/teaser_bg.mp4" autoplay loop muted playsinline controls preload="metadata" aria-label="phi-Scene teaser video"></video>
+    <video class="fig teaser-video" src="assets/teaser/teaser_bg.mp4" autoplay loop muted playsinline controls preload="metadata" aria-label="phi-Scene teaser video"></video>
+    <p class="video-cue-row">
+      <button class="video-cue" type="button" data-time="78">
+        <span class="video-cue__arrow" aria-hidden="true">&#8593;</span>
+        <span class="video-cue__label">Click here to see simulation demos</span>
+      </button>
+    </p>
     <figcaption class="teaser-caption">
       TL;DR: $\phi$-Scene reconstructs physically grounded, simulation-ready 3D scenes from single images through topology-driven physical assembly.
     </figcaption>
@@ -302,6 +308,29 @@ To our knowledge, $\phi$-Scene is among the first image-to-3D scene reconstructi
         buildDemo('static-comparison', 'static');
         buildDemo('dynamic-comparison', 'dynamic');
       });
+
+      var teaserVideo = document.querySelector('.teaser-video');
+      var videoCue = document.querySelector('.video-cue');
+      if (teaserVideo && videoCue) {
+        function positionVideoCue() {
+          if (!teaserVideo.duration) return;
+          var ratio = Number(videoCue.dataset.time) / teaserVideo.duration;
+          videoCue.style.setProperty('--cue-position', (Math.min(1, Math.max(0, ratio)) * 100) + '%');
+        }
+
+        if (teaserVideo.readyState > 0) positionVideoCue();
+        else teaserVideo.addEventListener('loadedmetadata', positionVideoCue, { once: true });
+
+        videoCue.addEventListener('click', function () {
+          function seekToSimulation() {
+            teaserVideo.currentTime = Number(videoCue.dataset.time);
+            teaserVideo.play().catch(function () {});
+          }
+
+          if (teaserVideo.readyState > 0) seekToSimulation();
+          else teaserVideo.addEventListener('loadedmetadata', seekToSimulation, { once: true });
+        });
+      }
     })();
   </script>
 </body>
