@@ -1,363 +1,308 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>&phi;-Scene: Physically Grounded Image-to-3D Scene Reconstruction</title>
-  <meta name="description" content="phi-Scene: Physically Grounded Image-to-3D Scene Reconstruction" />
-  <link rel="icon" type="image/png" href="icons/icon.png" />
-  <link rel="stylesheet" href="css/style.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="phi-Scene reconstructs physically grounded, simulation-ready 3D scenes from a single image.">
+  <title>$\phi$-Scene: Physically Grounded Image-to-3D Scene Reconstruction</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
 </head>
 <body>
-
-  <!-- ===================== TEASER / HERO ===================== -->
-  <header class="hero">
-    <!-- full-bleed background: the whole reel -->
-    <video class="hero__bg" src="assets/teaser/teaser_bg.mp4"
-           autoplay loop muted playsinline preload="auto" aria-hidden="true"></video>
-
-    <!-- darkening overlay for text legibility -->
-    <div class="hero__overlay" aria-hidden="true"></div>
-
-    <!-- centered title block -->
-    <div class="hero__content">
-      <h1 class="hero__title">&phi;-Scene: Physically Grounded Image-to-3D Scene Reconstruction</h1>
-
-      <ul class="authors">
-        <li><a href="https://haodong2000.github.io/">Haodong Li</a></li>
-        <li><a>Lulu Shao</a></li>
-        <li><a href="https://suikasibyl.github.io/">Haolin Lu</a></li>
-        <li><a>Yu Fu</a></li>
-        <li><a href="https://chenyenru.github.io/">Yen-Ru Chen</a></li>
-        <li><a href="https://seemandhar.github.io/">Seemandhar Jain</a></li>
-        <li><a href="https://cseweb.ucsd.edu/~mkchandraker/">Manmohan Chandraker</a></li>
-      </ul>
-
-      <p class="affiliation">University of California San Diego</p>
-
-      <nav class="links">
-        <a class="btn" href="http://arxiv.org/pdf/2606.21596" target="_blank" rel="noopener">
-          <span>Paper</span>
-        </a>
-        <a class="btn" href="http://arxiv.org/abs/2606.21596" target="_blank" rel="noopener">
-          <span>arXiv</span>
-        </a>
-        <a class="btn btn--disabled" aria-disabled="true" tabindex="-1">
-          <span>Code</span>
-        </a>
-        <a class="btn" href="#demo-dynamic">
-          <span>Interactive Demo</span>
-        </a>
-      </nav>
-    </div>
-
-    <!-- hover-reveal video controls -->
-    <div class="hero__controls">
-      <button class="hero__playpause" type="button" aria-label="Play / pause">&#10074;&#10074;</button>
-      <div class="hero__progress" role="slider" tabindex="0" aria-label="Seek video"
-           aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-        <div class="hero__progress-fill"></div>
-        <div class="hero__sim-marker">
-          <button class="hero__sim-cta" type="button">Click here to see simulation demos!</button>
-        </div>
-      </div>
-    </div>
+  <header>
+    <h1>$\phi$-Scene: Physically Grounded Image-to-3D Scene Reconstruction</h1>
+    <p class="authors" aria-label="Authors">
+      <a href="https://haodong2000.github.io/" target="_blank" rel="noopener">Haodong Li</a>&nbsp;&nbsp;&nbsp;
+      <span>Lulu Shao</span>&nbsp;&nbsp;&nbsp;
+      <a href="https://suikasibyl.github.io/" target="_blank" rel="noopener">Haolin Lu</a>&nbsp;&nbsp;&nbsp;
+      <span>Yu Fu</span>&nbsp;&nbsp;&nbsp;
+      <a href="https://chenyenru.github.io/" target="_blank" rel="noopener">Yen-Ru Chen</a>&nbsp;&nbsp;&nbsp;
+      <a href="https://seemandhar.github.io/" target="_blank" rel="noopener">Seemandhar Jain</a>&nbsp;&nbsp;&nbsp;
+      <a href="https://cseweb.ucsd.edu/~mkchandraker/" target="_blank" rel="noopener">Manmohan Chandraker</a>
+    </p>
+    <p class="affils">University of California San Diego</p>
+    <p class="links-bar">
+      <a href="https://arxiv.org/pdf/2606.21596" target="_blank" rel="noopener"><i class="fa-regular fa-file-pdf" aria-hidden="true"></i>PDF</a>&nbsp;&nbsp;&nbsp;
+      <a href="https://arxiv.org/abs/2606.21596" target="_blank" rel="noopener"><i class="ai ai-arxiv" aria-hidden="true"></i>arXiv</a>&nbsp;&nbsp;&nbsp;
+      <a href="#static-comparison"><i class="fa-solid fa-gamepad" aria-hidden="true"></i>Interactive Demo (Static)</a>&nbsp;&nbsp;&nbsp;
+      <a href="#dynamic-comparison"><i class="fa-solid fa-gamepad" aria-hidden="true"></i>Interactive Demo (Dynamic)</a>&nbsp;&nbsp;&nbsp;
+      <a href="#bibtex">
+        <i class="fa-solid fa-quote-left"></i>BibTeX</a>
+    </p>
   </header>
 
-  <!-- ===================== TL;DR ===================== -->
-  <section class="tldr">
-    <p class="tldr__text">
-      <span class="tldr__tag"><strong>TL;DR:</strong></span>
-<strong>&phi;-Scene</strong> reconstructs <em>physically grounded</em>, <em>simulation-ready</em> 3D scenes from single images via <em>topology-driven physical assembly</em>.
-    </p>
-  </section>
+  <figure class="teaser">
+    <video class="fig" src="assets/teaser/teaser_bg.mp4" autoplay loop muted playsinline controls preload="metadata" aria-label="phi-Scene teaser video"></video>
+    <figcaption class="teaser-caption">
+      TL;DR: $\phi$-Scene reconstructs physically grounded, simulation-ready 3D scenes from single images through topology-driven physical assembly.
+    </figcaption>
+  </figure>
 
-  <!-- ===================== ABSTRACT ===================== -->
-  <section class="abstract">
-    <details class="abstract__details">
-      <summary class="abstract__summary">Abstract<span class="abstract__hint">(click to expand)</span></summary>
-      <div>
-        <p>Reconstructing compositional 3D scenes from a single image is a fundamental challenge in 3D world modeling. Recent methods can recover high-fidelity, complete 3D objects and predict plausible scene arrangements, but most still treat scene reconstruction primarily as a visual and geometric prediction problem. Their outputs may therefore contain floating objects, interpenetrations, or unstable-contact artifacts, limiting their physical validity and downstream usability in simulation, robotics, and interactive environments.</p>
-        <p>We present &phi;-Scene, a physically grounded approach to open-vocabulary and compositional image-to-3D scene reconstruction. The key premise is that a reconstructed scene should not be treated merely as a set of objects with predicted poses, but as a stable physical system. Accordingly, &phi;-Scene formulates reconstruction as topology-driven physical assembly: it infers how objects support one another, orders them accordingly, and progressively settles each object against its already stabilized support context. To instantiate this, &phi;-Scene uses compositional 3D foundation models to recover complete object geometries and initial object poses, optionally transfers global arrangement cues from a holistic image-to-3D prior, and then performs support-aware physical assembly. For each object in topological order, SDF-based optimization first resolves penetrations against the pre-settled support context, and rigid-body simulation then settles the object into a stable contact configuration under real-world physical constraints. This process produces compositional 3D reconstructions that preserve object-level geometry while improving placement coherence, contact validity, and dynamic physical stability.</p>
-        <p>Experiments on 3D-Front show that &phi;-Scene achieves the strongest overall performance among out-of-domain methods and remains highly competitive with in-domain baselines on standard 3D reconstruction metrics. Human and VLM evaluations further show strong preference for &phi;-Scene in visual quality, reference alignment, and physical plausibility. Finally, dedicated physical plausibility metrics covering static contact quality and dynamic stability demonstrate that &phi;-Scene substantially reduces penetration artifacts while producing much lower post-simulation drift, indicating more stable and physically grounded 3D scenes.</p>
-      </div>
-    </details>
-  </section>
+  <nav class="toc" aria-label="Table of contents">
+    <h3>Contents</h3>
+    <ol>
+      <li><a href="#abstract">Abstract</a></li>
+      <li><a href="#static-comparison">Static Comparison</a></li>
+      <li><a href="#dynamic-comparison">Dynamic Comparison</a></li>
+      <li><a href="#bibtex">BibTeX</a></li>
+    </ol>
+  </nav>
 
-  <!-- ===================== INTERACTIVE DEMO — STATIC ===================== -->
-  <section class="demo" id="demo-static">
-    <div class="demo__head">
-      <h2 class="demo__title">Interactive Comparison: Static</h2>
-    <!-- Instructions with icons -->
-    <div class="instructions" style="margin-top: 10px;">
-      <div class="instruction-item" style="display: flex; align-items: center;">
-        <img src="icons/left-click.png" alt="Left Click" style="margin-right: 0px; width: 25px; height: 100%;">
-        <span> Drag with left click to <strong>rotate</strong>.</span>
-  
-        <img src="icons/scroll-wheel.png" alt="Scroll Wheel" style="margin-right: 0px; width: 25px; height: 100%;">
-        <span>Scroll to <strong>zoom in/out</strong>.</span>
-  
-        <img src="icons/right-click.png" alt="Right Click" style="margin-right: 0px; width: 25px; height: 100%;">
-        <span>Drag with right click to <strong>move</strong>.</span>
-    </div>
-    </div>
-    <p class="demo__sub">Recent methods can recover complete 3D objects and plausible scene arrangements, but often produce <strong>unstable contacts</strong> because physical validity is not explicitly enforced.
-    &phi;-Scene instead places <strong>physical grounding</strong> at the core of 3D scene reconstruction by formulating it as a physical assembly process, producing much more coherent and physically stable 3D scenes.
-</p>
-    <div class="demo__cases" aria-label="Select scene"></div>
-    <div class="cases-scroll" aria-hidden="true"><div class="cases-scroll__thumb"></div></div>
-    <div class="surround__frame"></div>
-  </section>
+  <main>
+    <section class="section" id="abstract">
+      <h2>§1 Abstract</h2>
+      <p>
+Recent image-to-3D scene methods recover high-fidelity 3D objects with plausible arrangements, but often leave floatings and interpenetrations that limit physical validity and downstream use in interactive environments.
+      </p><p>
+We present $\phi$-Scene, a physically grounded approach for open-vocabulary and compositional image-to-3D scene reconstruction that treats a scene not merely as a set of objects with predicted poses, but as a globally stable physical system.
+$\phi$-Scene formulates reconstruction as topology-driven physical assembly: given an initial scene of reconstructed objects, it infers how objects support one another and settles them one by one in topological order.
+For each object, SDF-based optimization first resolves penetrations against the already-settled support context, and rigid-body simulation then settles the object into a stable equilibrium under real-world physical constraints.
+The resulting scene stays aligned to the reference image, with every object resting at a physically valid, stable contact configuration.
+      </p><p>
+On the 3D-Front benchmark, $\phi$-Scene achieves the strongest overall performance among out-of-domain methods and remains highly competitive with in-domain baselines on standard reconstruction metrics.
+Human and MLLM studies prefer $\phi$-Scene in visual quality, reference alignment, and physical plausibility.
+Dedicated physical metrics show that it substantially reduces penetration artifacts and yields much lower post-simulation drift.
+      </p><p>
+      <strong>
+To our knowledge, $\phi$-Scene is among the first image-to-3D scene reconstruction methods that explicitly reaches dynamic rigid-body equilibrium while preserving reference alignment.
+      </strong>
+      </p>
+    </section>
 
-  <!-- divider between the two interactive comparisons -->
-  <hr class="demo-sep" aria-hidden="true" />
+    <section class="demo section" id="static-comparison">
+      <h2>§2 Interactive Comparison: Static</h2>
+      <p class="demo-note">Drag to rotate, scroll to zoom, and right-drag to pan.</p>
+      <div class="demo__cases" role="group" aria-label="Select a static scene"></div>
+      <div class="cases-scroll" aria-hidden="true"><div class="cases-scroll__thumb"></div></div>
+      <p class="demo__status" role="status" aria-live="polite"></p>
+      <div class="surround__frame" aria-label="Static 3D reconstruction comparison" aria-busy="true"></div>
+    </section>
 
-  <!-- ===================== INTERACTIVE DEMO — DYNAMIC ===================== -->
-  <section class="demo" id="demo-dynamic">
-    <div class="demo__head">
-      <h2 class="demo__title">Interactive Comparison: Dynamic</h2>
-    <!-- Instructions with icons -->
-    <div class="instructions" style="margin-top: 10px;">
-      <div class="instruction-item" style="display: flex; align-items: center;">
-        <img src="icons/left-click.png" alt="Left Click" style="margin-right: 0px; width: 25px; height: 100%;">
-        <span> Drag with left click to <strong>rotate</strong>.</span>
+    <section class="demo section" id="dynamic-comparison">
+      <h2>§3 Interactive Comparison: Dynamic</h2>
+      <p class="demo-note">Drag to rotate, scroll to zoom, and right-drag to pan.</p>
+      <div class="demo__cases" role="group" aria-label="Select a dynamic scene"></div>
+      <div class="cases-scroll" aria-hidden="true"><div class="cases-scroll__thumb"></div></div>
+      <p class="demo__status" role="status" aria-live="polite"></p>
+      <div class="surround__frame" aria-label="Dynamic 3D reconstruction comparison" aria-busy="true"></div>
+    </section>
 
-        <img src="icons/scroll-wheel.png" alt="Scroll Wheel" style="margin-right: 0px; width: 25px; height: 100%;">
-        <span>Scroll to <strong>zoom in/out</strong>.</span>
-
-        <img src="icons/right-click.png" alt="Right Click" style="margin-right: 0px; width: 25px; height: 100%;">
-        <span>Drag with right click to <strong>move</strong>.</span>
-    </div>
-    </div>
-    <p class="demo__sub">When the reconstructed 3D scenes are released in a physics simulator, prior methods often <strong>explode / fall apart</strong> due to unstable contacts like penetrations, yielding severe post-simulation drift.
-    In contrast, &phi;-Scene's topology-driven physical assembly strategy keeps the 3D scene <strong>almost in a global rigid-body equilibrium</strong>, allowing it stay physically stable with minimal post-simulation drift.</p>
-    <div class="demo__cases" aria-label="Select scene"></div>
-    <div class="cases-scroll" aria-hidden="true"><div class="cases-scroll__thumb"></div></div>
-    <div class="surround__frame"></div>
-  </section>
-
-  <!-- divider between the demo and the citation -->
-  <hr class="demo-sep" aria-hidden="true" />
-
-  <!-- ===================== BIBTEX ===================== -->
-  <section class="bibtex" id="bibtex">
-    <h2 class="bibtex__title">BibTeX</h2>
-    <p class="bibtex__lead">Please consider citing our paper if you find it useful in your research. 🌹</p>
-    <div class="bibtex__box">
-      <button class="bibtex__copy" type="button"
-        onclick="var b=this;navigator.clipboard.writeText(b.parentNode.querySelector('code').innerText).then(function(){b.textContent='Copied!';setTimeout(function(){b.textContent='Copy';},1500);});">Copy</button>
-      <pre class="bibtex__code"><code>@article{li2026phi,
+    <section class="section" id="bibtex">
+      <h2>§4 BibTeX</h2>
+      <pre class="selectable"><code>@article{li2026phi,
   title={$\phi$-Scene: Physically Grounded Image-to-3D Scene Reconstruction},
   author={Li, Haodong and Shao, Lulu and Lu, Haolin and Fu, Yu and Chen, Yen-Ru and Jain, Seemandhar and Chandraker, Manmohan},
   journal={arXiv preprint arXiv:2606.21596},
   year={2026}
 }</code></pre>
-    </div>
-  </section>
+    </section>
+
+  </main>
 
   <script>
     (function () {
-      var WEB    = 'assets/post_sim_web';
-      var RGBS   = 'assets/rgbs';
-      var MASKS  = 'assets/masks';
+      var WEB = 'assets/post_sim_web';
+      var RGBS = 'assets/rgbs';
+      var MASKS = 'assets/masks';
       var N_CASES = 16;
       var DEFAULT_CASE = 8;
-
-      // Ours is large (top-left 2x2); the 5 baselines fill the remaining cells b0..b4
       var METHODS = [
-        { file: 'phi-scene',     label: '&phi;-Scene (Ours)', ours: true },
-        { file: 'midi_textured', label: 'MIDI'     },
-        { file: 'scenegen',      label: 'SceneGen' },
-        { file: 'gen3dsr_no_bg', label: 'Gen3DSR'  },
-        { file: 'depr',          label: 'DepR'     },
-        { file: 'sam3d',         label: 'SAM3D'    }
+        { file: 'phi-scene', label: String.raw`$\phi$-Scene (Ours)`, ours: true },
+        { file: 'midi_textured', label: 'MIDI' },
+        { file: 'scenegen', label: 'SceneGen' },
+        { file: 'gen3dsr_no_bg', label: 'Gen3DSR' },
+        { file: 'depr', label: 'DepR' },
+        { file: 'sam3d', label: 'SAM3D' }
       ];
-      var BASELINES = METHODS.filter(function (m) { return !m.ours; });
+      var BASELINES = METHODS.filter(function (method) { return !method.ours; });
       var AREAS = ['b0', 'b1', 'b2', 'b3', 'b4'];
 
-      function pad(i) { return String(i).padStart(3, '0'); }
-
-      // static: hold the final settled frame (last keyframe), then pause
-      function poseEnd(mv) {
-        if (!mv.duration) { return setTimeout(function () { poseEnd(mv); }, 80); }
-        try { mv.currentTime = mv.duration; mv.pause(); } catch (e) {}
-      }
-      // dynamic: (re)start the settling animation from the beginning (loops)
-      function playFromStart(mv) {
-        try { mv.currentTime = 0; mv.play(); } catch (e) {}
+      function pad(index) {
+        return String(index).padStart(3, '0');
       }
 
-      // Build one comparison section. Only the per-frame animation behavior
-      // differs between modes; the strip, grid, and rail are fully shared.
+      function setStaticPose(viewer) {
+        try {
+          if (viewer.duration > 0) viewer.currentTime = viewer.duration;
+          viewer.pause();
+        } catch (error) {}
+      }
+
+      function playAnimation(viewer) {
+        try {
+          viewer.currentTime = 0;
+          viewer.play();
+        } catch (error) {}
+      }
+
+      function typesetMath(element) {
+        function render() {
+          if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
+            window.MathJax.typesetPromise([element]).catch(function () {});
+          }
+        }
+
+        if (document.readyState === 'complete') render();
+        else window.addEventListener('load', render, { once: true });
+      }
+
       function buildDemo(sectionId, mode) {
         var section = document.getElementById(sectionId);
-        var cases   = section.querySelector('.demo__cases');
-        var frame   = section.querySelector('.surround__frame');
-        var thumbs  = [];
-        var viewers = {};   // file -> model-viewer
+        var cases = section.querySelector('.demo__cases');
+        var frame = section.querySelector('.surround__frame');
+        var status = section.querySelector('.demo__status');
+        var thumbs = [];
+        var viewers = {};
+        var requestSerial = 0;
+        var viewerAttributes = 'camera-controls interaction-prompt="none" disable-tap ' +
+          'shadow-intensity="0.7" exposure="1.0" environment-image="neutral" ' +
+          'loading="lazy" reveal="auto"' + (mode === 'dynamic' ? ' autoplay' : '');
 
-        var MV = 'camera-controls interaction-prompt="none" disable-tap ' +
-                 'shadow-intensity="0.7" exposure="1.0" environment-image="neutral" ' +
-                 'loading="lazy" reveal="auto"' + (mode === 'dynamic' ? ' autoplay' : '');
-
-        // --- case strip: each thumb is RGB | mask, horizontally concatenated ---
-        for (var i = 0; i < N_CASES; i++) {
-          (function (idx) {
-            var b = document.createElement('button');
-            b.className = 'case-thumb';
-            b.type = 'button';
-            b.innerHTML =
-              '<img src="' + RGBS  + '/' + pad(idx) + '.png" alt="RGB ' + idx + '" loading="lazy">' +
-              '<img src="' + MASKS + '/' + pad(idx) + '.png" alt="Mask ' + idx + '" loading="lazy">';
-            b.addEventListener('click', function () { setCase(idx); });
-            cases.appendChild(b);
-            thumbs.push(b);
-          })(i);
+        for (var index = 0; index < N_CASES; index += 1) {
+          (function (sceneIndex) {
+            var button = document.createElement('button');
+            button.className = 'case-thumb';
+            button.type = 'button';
+            button.setAttribute('aria-label', 'Load scene ' + (sceneIndex + 1));
+            button.innerHTML =
+              '<img src="' + RGBS + '/' + pad(sceneIndex) + '.png" alt="RGB input for scene ' + (sceneIndex + 1) + '" loading="lazy">' +
+              '<img src="' + MASKS + '/' + pad(sceneIndex) + '.png" alt="Mask for scene ' + (sceneIndex + 1) + '" loading="lazy">';
+            button.addEventListener('click', function () { setCase(sceneIndex); });
+            cases.appendChild(button);
+            thumbs.push(button);
+          })(index);
         }
 
-        // --- 3x3 grid of viewers: Ours = top-left 2x2, baselines fill the rest ---
-        function addTile(m, area) {
-          var t = document.createElement('div');
-          t.className = 'tile' + (m.ours ? ' tile--ours' : '');
-          t.style.gridArea = area;
-          var live = (mode === 'dynamic' && m.ours)
-            ? '<span class="tile__live"><i class="tile__live-dot"></i>Not a still image!</span>'
-            : '';
-          t.innerHTML = '<model-viewer class="mv" ' + MV + '></model-viewer>' + live +
-                        '<span class="tile__label">' + m.label + '</span>';
-          frame.appendChild(t);
-          var mv = t.querySelector('model-viewer');
-          mv.addEventListener('load', function () {
-            (mode === 'dynamic' ? playFromStart : poseEnd)(mv);
+        function addTile(method, area) {
+          var tile = document.createElement('div');
+          tile.className = 'tile' + (method.ours ? ' tile--ours' : '');
+          tile.style.gridArea = area;
+          tile.innerHTML = '<model-viewer class="mv" ' + viewerAttributes + '></model-viewer>' +
+            '<span class="tile__label">' + method.label + '</span>';
+          frame.appendChild(tile);
+          var viewer = tile.querySelector('model-viewer');
+          viewer.addEventListener('load', function () {
+            (mode === 'dynamic' ? playAnimation : setStaticPose)(viewer);
           });
-          viewers[m.file] = mv;
+          viewers[method.file] = viewer;
         }
+
         addTile(METHODS[0], 'ours');
-        BASELINES.forEach(function (m, k) { addTile(m, AREAS[k]); });
+        BASELINES.forEach(function (method, methodIndex) {
+          addTile(method, AREAS[methodIndex]);
+        });
+        typesetMath(frame);
 
-        function setCase(idx) {
-          var id = pad(idx);
-          METHODS.forEach(function (m) {
-            viewers[m.file].src = WEB + '/' + id + '/' + m.file + '.glb';
+        function setCase(sceneIndex) {
+          var id = pad(sceneIndex);
+          var serial = ++requestSerial;
+          thumbs.forEach(function (thumb, thumbIndex) {
+            var isActive = thumbIndex === sceneIndex;
+            thumb.classList.toggle('is-active', isActive);
+            thumb.setAttribute('aria-pressed', String(isActive));
           });
-          thumbs.forEach(function (t, k) { t.classList.toggle('is-active', k === idx); });
+          frame.setAttribute('aria-busy', 'true');
+          status.textContent = 'Loading scene ' + (sceneIndex + 1) + ' of ' + N_CASES + '...';
+
+          var remaining = METHODS.length;
+          METHODS.forEach(function (method) {
+            var viewer = viewers[method.file];
+            function loaded() {
+              viewer.removeEventListener('error', failed);
+              if (serial !== requestSerial) return;
+              remaining -= 1;
+              if (remaining === 0) {
+                frame.setAttribute('aria-busy', 'false');
+                status.textContent = '';
+              }
+            }
+            function failed() {
+              viewer.removeEventListener('load', loaded);
+              if (serial !== requestSerial) return;
+              frame.setAttribute('aria-busy', 'false');
+              status.textContent = 'A 3D model in scene ' + (sceneIndex + 1) + ' could not be rendered.';
+            }
+            viewer.addEventListener('load', loaded, { once: true });
+            viewer.addEventListener('error', failed, { once: true });
+            viewer.src = WEB + '/' + id + '/' + method.file + '.glb';
+          });
         }
+
         setCase(DEFAULT_CASE);
 
-        // --- custom horizontal scroll rail under the strip ---
         var rail = section.querySelector('.cases-scroll');
         var knob = section.querySelector('.cases-scroll__thumb');
+
         function refreshRail() {
-          var vis = cases.clientWidth, total = cases.scrollWidth;
-          if (total <= vis + 1) { rail.style.visibility = 'hidden'; return; }
-          rail.style.visibility = 'visible';
-          var ratio = vis / total;                         // visible fraction
-          var maxScroll = total - vis;
-          var p = maxScroll ? cases.scrollLeft / maxScroll : 0;
-          knob.style.width = (ratio * 100) + '%';
-          knob.style.left  = (p * (100 - ratio * 100)) + '%';
+          var visibleWidth = cases.clientWidth;
+          var totalWidth = cases.scrollWidth;
+          if (totalWidth <= visibleWidth + 1) {
+            rail.hidden = true;
+            return;
+          }
+          rail.hidden = false;
+          var visibleRatio = visibleWidth / totalWidth;
+          var maxScroll = totalWidth - visibleWidth;
+          var scrollRatio = maxScroll ? cases.scrollLeft / maxScroll : 0;
+          knob.style.width = (visibleRatio * 100) + '%';
+          knob.style.left = (scrollRatio * (100 - visibleRatio * 100)) + '%';
         }
-        function centerRail() {
-          cases.scrollLeft = (cases.scrollWidth - cases.clientWidth) / 2;  // start at 50%
+
+        function centerCases() {
+          cases.scrollLeft = (cases.scrollWidth - cases.clientWidth) / 2;
           refreshRail();
         }
+
         cases.addEventListener('scroll', refreshRail, { passive: true });
         window.addEventListener('resize', refreshRail);
-        window.addEventListener('load', centerRail);
-        centerRail();
+        window.addEventListener('load', centerCases, { once: true });
+        requestAnimationFrame(centerCases);
 
-        // drag the knob to scroll the strip
-        var dragging = false, startX = 0, startScroll = 0;
-        function railToScroll(dx) {
-          var vis = cases.clientWidth, total = cases.scrollWidth;
-          var maxScroll = total - vis;
-          var travel = rail.clientWidth - knob.clientWidth;   // px the knob can move
-          if (travel <= 0) return;
-          cases.scrollLeft = Math.max(0, Math.min(maxScroll, startScroll + dx * (maxScroll / travel)));
-        }
-        knob.addEventListener('pointerdown', function (e) {
-          dragging = true; startX = e.clientX; startScroll = cases.scrollLeft;
-          knob.setPointerCapture(e.pointerId); e.preventDefault();
+        var dragging = false;
+        var startX = 0;
+        var startScroll = 0;
+
+        knob.addEventListener('pointerdown', function (event) {
+          dragging = true;
+          startX = event.clientX;
+          startScroll = cases.scrollLeft;
+          knob.setPointerCapture(event.pointerId);
+          event.preventDefault();
         });
-        knob.addEventListener('pointermove', function (e) { if (dragging) railToScroll(e.clientX - startX); });
-        knob.addEventListener('pointerup',   function () { dragging = false; });
+        knob.addEventListener('pointermove', function (event) {
+          if (!dragging) return;
+          var maxScroll = cases.scrollWidth - cases.clientWidth;
+          var travel = rail.clientWidth - knob.clientWidth;
+          if (travel > 0) {
+            cases.scrollLeft = Math.max(0, Math.min(maxScroll,
+              startScroll + (event.clientX - startX) * maxScroll / travel));
+          }
+        });
+        knob.addEventListener('pointerup', function () { dragging = false; });
         knob.addEventListener('pointercancel', function () { dragging = false; });
-        // click on the rail track to jump
-        rail.addEventListener('pointerdown', function (e) {
-          if (e.target === knob) return;
-          var r = rail.getBoundingClientRect();
-          var vis = cases.clientWidth, total = cases.scrollWidth;
-          var p = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
-          cases.scrollLeft = p * (total - vis);
+        rail.addEventListener('pointerdown', function (event) {
+          if (event.target === knob) return;
+          var bounds = rail.getBoundingClientRect();
+          var ratio = Math.max(0, Math.min(1, (event.clientX - bounds.left) / bounds.width));
+          cases.scrollLeft = ratio * (cases.scrollWidth - cases.clientWidth);
         });
       }
 
-      buildDemo('demo-static',  'static');
-      buildDemo('demo-dynamic', 'dynamic');
+      customElements.whenDefined('model-viewer').then(function () {
+        buildDemo('static-comparison', 'static');
+        buildDemo('dynamic-comparison', 'dynamic');
+      });
     })();
   </script>
-
-  <script>
-    (function () {
-      var v    = document.querySelector('.hero__bg');
-      var bar  = document.querySelector('.hero__progress');
-      var fill = document.querySelector('.hero__progress-fill');
-      var pp   = document.querySelector('.hero__playpause');
-      if (!v || !bar || !fill || !pp) return;
-
-      var PLAY = '▶', PAUSE = '❚❚';
-      function syncIcon() { pp.textContent = v.paused ? PLAY : PAUSE; }
-      pp.addEventListener('click', function () { v.paused ? v.play() : v.pause(); });
-      v.addEventListener('play', syncIcon);
-      v.addEventListener('pause', syncIcon);
-
-      v.addEventListener('timeupdate', function () {
-        if (!v.duration) return;
-        var p = v.currentTime / v.duration;
-        fill.style.width = (p * 100) + '%';
-        bar.setAttribute('aria-valuenow', Math.round(p * 100));
-      });
-
-      function seekToClientX(clientX) {
-        var r = bar.getBoundingClientRect();
-        var p = Math.min(1, Math.max(0, (clientX - r.left) / r.width));
-        if (v.duration) { v.currentTime = p * v.duration; fill.style.width = (p * 100) + '%'; }
-      }
-      var dragging = false;
-      bar.addEventListener('pointerdown', function (e) {
-        dragging = true; bar.setPointerCapture(e.pointerId); seekToClientX(e.clientX);
-      });
-      bar.addEventListener('pointermove', function (e) { if (dragging) seekToClientX(e.clientX); });
-      bar.addEventListener('pointerup',   function () { dragging = false; });
-      bar.addEventListener('pointercancel', function () { dragging = false; });
-
-      // "Simulation demos" marker at 1:18 (78s) -> jump there on click
-      var SIM_TIME = 78;
-      var marker = document.querySelector('.hero__sim-marker');
-      var cta    = document.querySelector('.hero__sim-cta');
-      function placeMarker() {
-        if (v.duration && marker) marker.style.left = (SIM_TIME / v.duration * 100) + '%';
-      }
-      v.addEventListener('loadedmetadata', placeMarker);
-      placeMarker();
-      if (cta) {
-        cta.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
-        cta.addEventListener('click', function (e) {
-          e.stopPropagation();
-          v.currentTime = SIM_TIME;
-          v.play();
-        });
-      }
-
-      syncIcon();
-    })();
-  </script>
-
-  <!-- ===================== FOOTER ===================== -->
-  <footer class="site-footer" style="margin-top: -23px;">
-    <p>Thanks for visiting our project page! &copy; 2026 Haodong Li.</p>
-  </footer>
-
 </body>
 </html>
