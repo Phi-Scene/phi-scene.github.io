@@ -90,6 +90,10 @@ h2 {
   margin: 16px auto;
 }
 
+.teaser-video {
+  border-radius: 6px;
+}
+
 .fig {
   display: block;
   width: 100%;
